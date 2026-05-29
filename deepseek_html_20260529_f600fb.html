@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>بازی ماجراجویی حیوانات مهره‌دار (نسخه گل‌باران)</title>
+    <!-- Google Fonts: فونت شاد و کودکانه -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #FFE5B4 0%, #FFC8A2 100%);
+            font-family: 'Comic Neue', 'Varela Round', cursive, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 650px;
+            width: 100%;
+            background: rgba(255, 251, 235, 0.95);
+            border-radius: 72px 72px 48px 48px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2), inset 0 1px 4px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+
+        .screen {
+            padding: 24px 20px 20px;
+            transition: 0.2s;
+        }
+
+        /* صفحه شروع */
+        .start-screen {
+            text-align: center;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #E86A2C;
+            text-shadow: 3px 3px 0 #FFD966;
+            margin-bottom: 15px;
+            background: #FFFAE6;
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 60px;
+        }
+
+        .animal-icon {
+            font-size: 4rem;
+            margin: 15px 0 5px;
+        }
+
+        .input-name {
+            width: 90%;
+            padding: 16px 18px;
+            margin: 20px 0 15px;
+            font-size: 1.2rem;
+            font-family: 'Comic Neue', monospace;
+            border: 3px solid #F9B572;
+            border-radius: 60px;
+            background: #FFFDF5;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .input-name:focus {
+            border-color: #FF8C42;
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.3);
+        }
+
+        .btn-primary {
+            background: #3DC2EC;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'Comic Neue';
+            color: white;
+            border-radius: 48px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #1A759F;
+            transition: 0.07s linear;
+            width: 80%;
+            margin: 10px auto;
+            display: inline-block;
+        }
+
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #1A759F;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #F9B572;
+            box-shadow: 0 5px 0 #C46D2B;
+            color: #442200;
+            padding: 12px 18px;
+            font-size: 1.2rem;
+            border-radius: 48px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: 0.07s linear;
+        }
+
+        .btn-secondary:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #C46D2B;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            background: #FEE3B5;
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .score-box, .timer-box {
+            background: #FDF4DC;
+            padding: 6px 20px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .question-area {
+            background: #FFF7E8;
+            border-radius: 48px;
+            padding: 20px 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: fadeSlideUp 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #9B5E2C;
+            line-height: 1.3;
+        }
+
+        .question-counter {
+            font-size: 1rem;
+            background: #FFE0A3;
+            display: inline-block;
+            padding: 4px 15px;
+            border-radius: 30px;
+            margin-top: 10px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: #FEF2CF;
+            border: 3px solid #FFB347;
+            padding: 16px 15px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            font-family: 'Comic Neue';
+            text-align: right;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            color: #4A2A1A;
+        }
+
+        .option-btn:active {
+            transform: scale(0.97);
+        }
+
+        .option-prefix {
+            background: #FFB347;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .footer {
+            background: #D3E3B0;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #3C5A1D;
+            border-top: 3px solid #FFC48A;
+        }
+
+        .end-info {
+            background: #FFEFD0;
+            border-radius: 48px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .answers-review {
+            background: #FFF0DB;
+            border-radius: 32px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 280px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            border: 2px solid #FFC48A;
+            display: none;
+        }
+
+        .review-item {
+            border-bottom: 1px solid #FFD9A3;
+            padding: 10px;
+        }
+
+        .correct-badge {
+            color: #2B7A2F;
+            background: #CCFFCC;
+            border-radius: 20px;
+            padding: 2px 12px;
+            display: inline-block;
+        }
+
+        .wrong-badge {
+            color: #BB2E2E;
+            background: #FFD6D6;
+            border-radius: 20px;
+            padding: 2px 12px;
+        }
+
+        .sorry-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF6666;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 100px;
+            box-shadow: 0 8px 20px black;
+            z-index: 1000;
+            animation: fadeOut 1s ease forwards;
+            font-family: 'Comic Neue';
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* ===== گل‌های رنگی (جایگزین کانفتی) ===== */
+        .flower {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle, #FFB7B2, #FF6B6B);
+            border-radius: 50% 50% 50% 50%;
+            box-shadow: 0 0 0 2px #FFD966, 0 0 0 4px #FFB347;
+            pointer-events: none;
+            z-index: 9999;
+            animation: fallFlower 1.5s linear forwards;
+        }
+        .flower::before {
+            content: "🌸";
+            position: absolute;
+            font-size: 20px;
+            top: -8px;
+            left: 2px;
+            transform: rotate(15deg);
+        }
+        /* تنوع گلها با ایموجی‌های مختلف */
+        .flower-variant::before {
+            content: "🌼";
+        }
+        .flower-variant2::before {
+            content: "🌺";
+        }
+        @keyframes fallFlower {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .hide {
+            display: none;
+        }
+
+        button {
+            min-height: 48px;
+        }
+
+        @media (max-width: 550px) {
+            .question-text { font-size: 1.4rem; }
+            .option-btn { padding: 12px 12px; font-size: 1rem; }
+            .btn-primary { font-size: 1.3rem; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameContainer">
+    <!-- صفحه شروع -->
+    <div id="startScreen" class="screen start-screen">
+        <div class="animal-icon">🐘🦜🐠🦎</div>
+        <div class="title">ماجراجویی حیوانات مهره‌دار</div>
+        <input type="text" id="studentName" class="input-name" placeholder="نام خود را وارد کن..." autocomplete="off">
+        <br>
+        <button id="startBtn" class="btn-primary" disabled>🌟 شروع بازی 🌟</button>
+        <div style="height: 25px;"></div>
+    </div>
+
+    <!-- صفحه بازی -->
+    <div id="gameScreen" class="screen hide">
+        <div class="game-header">
+            <div class="score-box">⭐ امتیاز: <span id="scoreValue">0</span></div>
+            <div class="timer-box">⏱️ زمان: <span id="timerValue">130</span> ثانیه</div>
+        </div>
+        <div class="question-area">
+            <div class="question-text" id="questionText">سوال</div>
+            <div class="question-counter" id="questionCounter"></div>
+        </div>
+        <div id="optionsContainer" class="options-grid"></div>
+    </div>
+
+    <!-- صفحه پایانی -->
+    <div id="endScreen" class="screen hide">
+        <div class="end-info">
+            <div>🎉 پایان بازی 🎉</div>
+            <div id="finalNameMessage" style="font-size:1.4rem; margin:12px 0"></div>
+            <div>🏆 امتیاز نهایی: <strong id="finalScore">0</strong> از 10</div>
+            <div>⏱️ زمان سپری شده: <strong id="timeSpent">0</strong> ثانیه</div>
+            <div style="background:#FEE3B5; border-radius:40px; padding:8px; margin-top:12px;">📸 از این صفحه عکس بگیر و برای معلمت ارسال کن!</div>
+        </div>
+        <div class="action-buttons">
+            <button id="reviewAnswersBtn" class="btn-secondary">📋 مرور پاسخ‌ها</button>
+            <button id="restartGameBtn" class="btn-secondary">🔄 راه‌اندازی مجدد</button>
+        </div>
+        <div id="reviewPanel" class="answers-review"></div>
+    </div>
+
+    <div class="footer">
+        🧸 طراح بازی: نعیمه ریاضی | مدرس خلاق ابتدایی، مدرس دانشگاهی 🧸
+    </div>
+</div>
+
+<script>
+    // =======================  سوالات جدید (10 سوال) با تغییرات اعمال شده =======================
+    const QUESTIONS = [
+        { text: "🐱 کدام حیوان پوشش بدنش از خز (مو) است؟", options: ["سگ 🐕", "مرغ 🐔", "مار 🐍", "قورباغه 🐸"], correct: 0 },
+        { text: "🦜 کدامیک جزو دسته پرندگان نیست؟", options: ["طوطی 🦜", "شترمرغ 🐫", "پرستو 🐦", "پروانه 🦋"], correct: 3 },
+        { text: "🥚 کدام گروه تخم نمی‌گذارد؟", options: ["پرندگان 🐦", "پستانداران 🐕", "ماهی‌ها 🐟", "دوزیستان 🐸"], correct: 1 },
+        // سوال ۴: گزینه چهارم به "مار 🐍" تغییر کرد
+        { text: "🌊 کدام حیوان در آب زندگی می‌کند و آبشش دارد؟", options: ["قورباغه بالغ 🐸", "ماهی قزل‌آلا 🐟", "لاک‌پشت 🐢", "مار 🐍"], correct: 1 },
+        { text: "🐸 کدام جانور پوست نرم و مرطوب دارد، هم در آب و هم خشکی زندگی می‌کند؟", options: ["مارمولک 🦎", "قورباغه 🐸", "کروکودیل 🐊", "همستر 🐹"], correct: 1 },
+        // سوال ۶: ایموجی گزینه سوم از خفاش به گاو تغییر کرد (پستانداران 🐮)
+        { text: "🦇 خفاش جزو کدام دسته از مهره داران است؟", options: ["پرندگان 🐦", "دوزیستان 🐸", "پستانداران 🐮", "بی مهرگان 🐛"], correct: 2 },
+        { text: "🐧 پنگوئن‌ها چگونه راه می‌روند؟", options: ["چهار دست و پا", "روی دو پا و لولیدن", "با بال‌ها", "می‌پرند"], correct: 1 },
+        { text: "🦎 کدام خزنده پولک دارد و تخم می‌گذارد؟", options: ["سگ 🐕", "گربه 🐈", "مارمولک 🦎", "قورباغه 🐸"], correct: 2 },
+        { text: "🐸 کدامیک درباره قورباغه نادرست است؟", options: ["در نوزادی آبشش دارد", "در نوزادی دست و پا دارد", "در بزرگسالی دم ندارد", "در بزرگسالی با شش تنفس میکند"], correct: 1 },
+        { text: "📚 کدامیک جزو طبقه بندی مهره داران نیست؟", options: ["دوزیستان", "آبزیان", "گوشتخواران", "پرندگان"], correct: 2 }
+    ];
+    const TOTAL_QS = QUESTIONS.length; // = 10
+
+    // ----- state variables -----
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let secondsLeft = 130;             // تایمر 130 ثانیه
+    let timerInterval = null;
+    let gameActive = false;
+    let waitingNext = false;
+    let studentName = "";
+    
+    // ذخیره پاسخ‌های کاربر برای مرور
+    let userAnswers = [];
+    
+    // عناصر DOM
+    const startScreen = document.getElementById('startScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const endScreen = document.getElementById('endScreen');
+    const studentNameInput = document.getElementById('studentName');
+    const startBtn = document.getElementById('startBtn');
+    const scoreSpan = document.getElementById('scoreValue');
+    const timerSpan = document.getElementById('timerValue');
+    const questionTextDiv = document.getElementById('questionText');
+    const questionCounterSpan = document.getElementById('questionCounter');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const finalNameMessageSpan = document.getElementById('finalNameMessage');
+    const finalScoreSpan = document.getElementById('finalScore');
+    const timeSpentSpan = document.getElementById('timeSpent');
+    const reviewAnswersBtn = document.getElementById('reviewAnswersBtn');
+    const restartGameBtn = document.getElementById('restartGameBtn');
+    const reviewPanel = document.getElementById('reviewPanel');
+
+    // ------------- صداهای جدید و شاد (تغییر یافته) -------------
+    let audioCtx = null;
+    
+    function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // قفل‌گشایی با یک صدای خاموش
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0;
+        const osc = audioCtx.createOscillator();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(0.001);
+    }
+    
+    // صدای جدید برای پاسخ صحیح (ملودی شاد و کوتاه شبیه "دینگ دونگ" و تشویق ملایم)
+    function playCorrectMelody() {
+        try {
+            if (!audioCtx) initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().then(() => actuallyPlayCorrectMelody());
+            } else {
+                actuallyPlayCorrectMelody();
+            }
+        } catch(e) { console.log(e); }
+    }
+    
+    function actuallyPlayCorrectMelody() {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        // نت اول (Do بالا)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.frequency.value = 1046.50; // C6
+        gain1.gain.value = 0.2;
+        osc1.start();
+        gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+        osc1.stop(now + 0.3);
+        
+        // نت دوم (Mi)
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.frequency.value = 1318.52; // E6
+        gain2.gain.value = 0.2;
+        osc2.start(now + 0.12);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+        osc2.stop(now + 0.42);
+        
+        // نت سوم (Sol)
+        const osc3 = audioCtx.createOscillator();
+        const gain3 = audioCtx.createGain();
+        osc3.connect(gain3);
+        gain3.connect(audioCtx.destination);
+        osc3.frequency.value = 1567.98; // G6
+        gain3.gain.value = 0.18;
+        osc3.start(now + 0.25);
+        gain3.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+        osc3.stop(now + 0.55);
+        
+        // یک صدای کوتاه دست زدن مانند نویز ملایم برای شادی بیشتر
+        const bufferSize = 2048;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        const noiseGain = audioCtx.createGain();
+        noise.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        noiseGain.gain.value = 0.15;
+        noise.start(now + 0.1);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+        noise.stop(now + 0.35);
+    }
+    
+    // صدای تاسف برای پاسخ اشتباه (بدون تغییر)
+    function playSorrySound() {
+        try {
+            if (!audioCtx) initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().then(() => actuallyPlaySorry());
+            } else {
+                actuallyPlaySorry();
+            }
+        } catch(e) {}
+    }
+    
+    function actuallyPlaySorry() {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.value = 300;
+        gain.gain.value = 0.3;
+        osc.start();
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+        osc.stop(now + 0.7);
+    }
+    
+    // ---------- ریختن گل از آسمان (به جای کانفتی) ----------
+    function startFlowerRain() {
+        const flowerTypes = ['🌸', '🌼', '🌺', '🌻', '🌷', '🌸'];
+        for (let i = 0; i < 80; i++) {
+            const flowerDiv = document.createElement('div');
+            flowerDiv.classList.add('flower');
+            // تنوع گل
+            const randType = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+            flowerDiv.style.setProperty('--flower-emoji', `"${randType}"`);
+            // رنگ‌های شاد متنوع
+            const colors = ['#FFB7B2', '#FF9F8D', '#FFD966', '#F4A261', '#9C89B8'];
+            flowerDiv.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random()*colors.length)]}, #FF6B6B)`;
+            flowerDiv.style.left = Math.random() * window.innerWidth + 'px';
+            flowerDiv.style.width = Math.random() * 18 + 14 + 'px';
+            flowerDiv.style.height = flowerDiv.style.width;
+            // اضافه کردن ایموجی با before
+            if (Math.random() > 0.6) flowerDiv.classList.add('flower-variant');
+            if (Math.random() > 0.8) flowerDiv.classList.add('flower-variant2');
+            document.body.appendChild(flowerDiv);
+            setTimeout(() => {
+                flowerDiv.style.transform = `translateY(${window.innerHeight + 50}px) rotate(${Math.random() * 720}deg)`;
+                flowerDiv.style.opacity = '0';
+            }, 10);
+            setTimeout(() => { if(flowerDiv && flowerDiv.remove) flowerDiv.remove(); }, 1600);
+        }
+    }
+    
+    function showSorryMessage() {
+        const toast = document.createElement('div');
+        toast.className = 'sorry-toast';
+        toast.innerText = '😔 متاسفم! پاسخ اشتباه بود 😔';
+        document.body.appendChild(toast);
+        setTimeout(() => { if(toast && toast.remove) toast.remove(); }, 1000);
+    }
+    
+    // ----- نمایش سوال جاری -----
+    function renderCurrentQuestion() {
+        if (!gameActive) return;
+        const q = QUESTIONS[currentQuestionIndex];
+        questionTextDiv.innerHTML = q.text;
+        questionCounterSpan.innerText = `سوال ${currentQuestionIndex+1} از ${TOTAL_QS}`;
+        optionsContainer.innerHTML = '';
+        const letters = ['🐣', '🦷', '🌟', '🍃'];
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-prefix">${letters[idx%4]}</span> ${opt}`;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!gameActive || waitingNext) return;
+                handleAnswer(idx);
+            });
+            optionsContainer.appendChild(btn);
+        });
+    }
+    
+    // مدیریت پاسخ
+    function handleAnswer(selectedIdx) {
+        if (!gameActive || waitingNext) return;
+        const currentQ = QUESTIONS[currentQuestionIndex];
+        const isCorrect = (selectedIdx === currentQ.correct);
+        
+        // ذخیره پاسخ برای مرور
+        userAnswers.push({
+            questionText: currentQ.text,
+            selectedOption: currentQ.options[selectedIdx],
+            correctOption: currentQ.options[currentQ.correct],
+            isCorrect: isCorrect
+        });
+        
+        if (isCorrect) {
+            score++;
+            scoreSpan.innerText = score;
+            playCorrectMelody();      // صدای جدید شاد
+            startFlowerRain();         // ریزش گل از آسمان
+        } else {
+            playSorrySound();
+            showSorryMessage();
+        }
+        
+        waitingNext = true;
+        
+        setTimeout(() => {
+            waitingNext = false;
+            if (!gameActive) return;
+            if (currentQuestionIndex + 1 < TOTAL_QS) {
+                currentQuestionIndex++;
+                renderCurrentQuestion();
+            } else {
+                endGameBecauseComplete();
+            }
+        }, 1000);
+    }
+    
+    // پایان بازی بر اثر کامل شدن سوالات
+    function endGameBecauseComplete() {
+        if (!gameActive) return;
+        stopTimer();
+        gameActive = false;
+        showEndScreen(false);
+    }
+    
+    // پایان بر اثر اتمام زمان
+    function timeoutEndGame() {
+        if (!gameActive) return;
+        stopTimer();
+        gameActive = false;
+        showEndScreen(true);
+    }
+    
+    function showEndScreen(isTimeout) {
+        gameScreen.classList.add('hide');
+        endScreen.classList.remove('hide');
+        const spentTime = 130 - secondsLeft;
+        finalScoreSpan.innerText = `${score} از ${TOTAL_QS}`;
+        finalNameMessageSpan.innerText = `${studentName} عزیز 🌟`;
+        timeSpentSpan.innerText = spentTime;
+        reviewPanel.style.display = 'none';
+        reviewPanel.innerHTML = '';
+    }
+    
+    // راه اندازی مجدد کامل
+    function fullReset() {
+        stopTimer();
+        gameActive = false;
+        waitingNext = false;
+        currentQuestionIndex = 0;
+        score = 0;
+        secondsLeft = 130;
+        userAnswers = [];
+        if(scoreSpan) scoreSpan.innerText = "0";
+        if(timerSpan) timerSpan.innerText = "130";
+        startScreen.classList.remove('hide');
+        gameScreen.classList.add('hide');
+        endScreen.classList.add('hide');
+        studentNameInput.value = "";
+        startBtn.disabled = true;
+        studentName = "";
+    }
+    
+    // شروع بازی
+    function startGame() {
+        if (!studentName.trim()) return;
+        initAudio();
+        if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        
+        gameActive = true;
+        waitingNext = false;
+        currentQuestionIndex = 0;
+        score = 0;
+        secondsLeft = 130;
+        userAnswers = [];
+        scoreSpan.innerText = "0";
+        timerSpan.innerText = "130";
+        
+        startScreen.classList.add('hide');
+        gameScreen.classList.remove('hide');
+        endScreen.classList.add('hide');
+        
+        renderCurrentQuestion();
+        startTimer();
+    }
+    
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!gameActive) return;
+            if (secondsLeft <= 1) {
+                secondsLeft = 0;
+                if(timerSpan) timerSpan.innerText = "0";
+                stopTimer();
+                if (gameActive) {
+                    gameActive = false;
+                    timeoutEndGame();
+                }
+            } else {
+                secondsLeft--;
+                timerSpan.innerText = secondsLeft;
+            }
+        }, 1000);
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    // مرور پاسخ‌ها
+    function buildReviewPanel() {
+        if (!userAnswers.length) {
+            reviewPanel.innerHTML = '<div style="padding:10px;text-align:center">📭 هنوز پاسخی ثبت نشده!</div>';
+            return;
+        }
+        let html = '<div style="font-weight:bold; margin-bottom:10px;">📝 پاسخ‌های شما:</div>';
+        userAnswers.forEach((ans, idx) => {
+            const statusBadge = ans.isCorrect ? '<span class="correct-badge">✅ صحیح</span>' : '<span class="wrong-badge">❌ نادرست</span>';
+            html += `<div class="review-item">
+                        <strong>❓ سوال ${idx+1}:</strong> ${ans.questionText}<br>
+                        ✏️ پاسخ تو: ${ans.selectedOption}<br>
+                        ✔️ پاسخ صحیح: ${ans.correctOption} ${statusBadge}
+                     </div>`;
+        });
+        reviewPanel.innerHTML = html;
+        reviewPanel.style.display = 'block';
+    }
+    
+    // Event listeners
+    studentNameInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        startBtn.disabled = val === "";
+        studentName = val;
+    });
+    
+    startBtn.addEventListener('click', () => {
+        if(studentNameInput.value.trim()) {
+            studentName = studentNameInput.value.trim();
+            startGame();
+        }
+    });
+    
+    restartGameBtn.addEventListener('click', () => {
+        fullReset();
+    });
+    
+    reviewAnswersBtn.addEventListener('click', () => {
+        if (reviewPanel.style.display === 'none' || reviewPanel.style.display === '') {
+            buildReviewPanel();
+        } else {
+            reviewPanel.style.display = 'none';
+        }
+    });
+    
+    // مقداردهی اولیه
+    fullReset();
+</script>
+</body>
+</html>
